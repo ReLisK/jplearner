@@ -91,6 +91,7 @@ class MainWindow(QMainWindow):
         window.setLayout(self.layout)
         self.setCentralWidget(window)
 
+        self.tl = None
         self._createMenu()
         self._createToolBar()
         self._createStatusBar()
@@ -138,16 +139,18 @@ class MainWindow(QMainWindow):
         self.DrawTranslationBoxWindow.close()
         self.DrawTranslationBoxWindow.deleteLater()
 
-        self.save_tl_box_button.hide()
+        self.save_tl_box_button.close()
         self.instructions.setText("See translations below:")
 
         # Sleep because it needs a second to get paint off window before taking pic
         time.sleep(0.3)
         # Instantiate translator
-        self.tl = translator.Translator(mainwindow=self)
-        self.tl.translate()
+        if self.tl is None:
+            self.tl = translator.Translator(mainwindow=self)
+        self.tl.coordinates = self.coordinates
 
     def _tl_snap_button(self):
+        self.tl.coordinates = self.coordinates
         self.tl.translate()
 
 

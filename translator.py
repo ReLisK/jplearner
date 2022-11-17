@@ -1,11 +1,13 @@
 import os
 import time
+import MeCab
 
 import imagehash
 import pytesseract
-from furigana_mod import return_plaintext
+from furigana.furigana import print_html
+from furigana_mod import return_plaintext, return_html
 from PIL import Image, ImageGrab
-from PyQt6 import QtCore
+from PyQt6 import QtCore, QtWebEngineWidgets
 from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -22,6 +24,7 @@ from constants import *
 class Translator:
     def __init__(self, mainwindow):
         self.main_window = mainwindow
+        self.text = []
         self.layout = self.main_window.layout
         self.coordinates = self.main_window.coordinates
         self.coordinates_label = QLabel(f"Box coordinates: {self.coordinates}")
@@ -33,10 +36,6 @@ class Translator:
         self.scroll_text_box = (
             QVBoxLayout()
         )  # The Vertical Box that contains the Horizontal Boxes of  labels and buttons
-
-        for i in range(1, 50):
-            object = QLabel("TextLabel")
-            self.scroll_text_box.addWidget(object)
 
         self.widget.setLayout(self.scroll_text_box)
 
@@ -61,22 +60,9 @@ class Translator:
         layout1.addLayout(lower_Hbox)
         self.layout.addLayout(layout1)
 
-    # def _translate(self):
-    #     old_tl_pic = utils.get_snippet(TRANSLATION_PICS_SAVE_LOCATION, TRANSLATION_PICS_FILE_NAME,
-    #                                   coordinates=self.coordinates)
-    #     cutoff = 5
-    #     while True:
-    #         time.sleep(0.5)
-    #         new_tl_pic = utils.get_snippet(TRANSLATION_PICS_SAVE_LOCATION, TRANSLATION_PICS_FILE_NAME,
-    #                                   coordinates=self.coordinates)
-    #         hash_old = imagehash.average_hash(Image.open(old_tl_pic))
-    #         hash_new = imagehash.average_hash(Image.open(new_tl_pic))
-    #         if hash_old - hash_new < cutoff:
-    #             old_tl_pic = new_tl_pic
-    #             print('similar')
-    #         else:
-    #             print('different')
-    #             break
+        self.view = QtWebEngineWidgets.QWebEngineView()
+        self.scroll_text_box.addWidget(self.view)
+
 
     def translate(self):
         save_path = utils.get_snippet(TRANSLATION_PICS_SAVE_LOCATION, TRANSLATION_PICS_FILE_NAME, coordinates=self.coordinates)
@@ -91,12 +77,24 @@ class Translator:
             translation_output = pytesseract.image_to_string(
                 Image.open(save_path), lang='jpn', timeout=1
             )
-            translation_output = return_plaintext(translation_output)
-            print(translation_output)
-            text = QLabel(f"{translation_output}")
-            text.setStyleSheet("font: 15pt ")
-            text.setWordWrap(True)
-            self.scroll_text_box.addWidget(text)
+            self.create_json(translation_output)
+            translation_output = return_html(translation_output)
+            self.text.append(f"{translation_output}")
+            html_list = self.list2html(self.text)
+            print(html_list)
+            html = f'''<!DOCTYPE html>
+                        <html lang="en">
+                            <head>
+                                <meta charset="UTF-8">
+                                <title>Title</title>
+                            </head>
+                            <body>
+                                <p>
+                                    {html_list}
+                                </p>
+                            </body>
+                        </html>'''
+            self.view.setHtml(html)
         except RuntimeError as e:
             print(e)
             pass
@@ -106,3 +104,14 @@ class Translator:
     def _onRangeChanged(self):
         # Set scrollbar to bottom whenever updated.
         self.scroll_bar.setSliderPosition(self.scroll_bar.maximum())
+
+    def list2html(self, elements):
+        return '<ul>\n' + '\n'.join(['<li>'.rjust(8) + name + '</li>' for name in elements]) + '\n</ul>'
+
+    def create_json(self, jp_text):
+        chasen = MeCab.Tagger("-Ochasen")
+        sd =chasen.parse(jp_text).split()
+        print(sd)
+        yomi = MeCab.Tagger("-Oyomi")
+        sd = chasen.parse(jp_text).split()
+        print(sd)
