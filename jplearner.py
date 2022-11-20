@@ -17,6 +17,7 @@ from PyQt6.QtWidgets import (
     QToolBar,
     QVBoxLayout,
     QWidget,
+    QSizePolicy,
 )
 
 import constants
@@ -76,18 +77,21 @@ class MainWindow(QMainWindow):
         # Radio buttons
         self.radio_layout = QHBoxLayout()
         self.radio_btn_grp = QButtonGroup()
-        self.jp2f = QRadioButton("JP to furigana", self)
-        self.jp2f.setChecked(True)
-        self.radio_btn_grp.addButton(self.jp2f)
-        self.radio_layout.addWidget(self.jp2f)
-        self.jp2eng = QRadioButton("JP to eng", self)
-        self.radio_btn_grp.addButton(self.jp2eng)
-        self.radio_layout.addWidget(self.jp2eng)
+        self.jph = QRadioButton("JP Horizontal", self)
+        self.jph.setChecked(True)
+        self.radio_btn_grp.addButton(self.jph)
+        self.radio_layout.addWidget(self.jph)
+        self.jpv = QRadioButton("JP Vertical", self)
+        self.radio_btn_grp.addButton(self.jpv)
+        self.radio_layout.addWidget(self.jpv)
         self.layout.addLayout(self.radio_layout)
 
         self.draw_box_button = QPushButton("Draw Box")
         self.draw_box_button.clicked.connect(self._draw_box_clicked)
         self.layout.addWidget(self.draw_box_button)
+        self.instructions.setMaximumHeight(30)
+        self.jph.setMaximumHeight(30)
+        self.jpv.setMaximumHeight(30)
         window.setLayout(self.layout)
         self.setCentralWidget(window)
 

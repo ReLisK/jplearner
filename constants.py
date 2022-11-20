@@ -5,4 +5,3 @@ TRANSLATION_PICS_FILE_NAME = "tl_pic.png"
 MAIN_WINDOW_TITLE = "JPLearner"
 SCREENSHOTS = os.path.join(os.getcwd(), 'Screenshots')
 SCREENSHOTS_NAME = "screenshots.png"
-
