@@ -3,7 +3,7 @@
 Draw outline of where you want translations to occur. Then when u click the "Snap" button it auto converts
 japanese kanji to kanji plus furigana superscripted. eg: \
 ![image](https://user-images.githubusercontent.com/7845409/202933194-460bee35-50ca-4151-b4d7-37c4ff9b7920.png)\
-Also you can select from a slew of translators to use the Hover for translation now.\
+Also you can select from a slew of translators to use the Hover for translation now.
 
 Made in a few days far from perfect.
 
