@@ -26,9 +26,9 @@ TO DOs:
 10. Main window janky when resized.
 
 ## Install
-Requirements.txt is there
-Download and install Dependencies
-run pip install for requirements 
+Requirements.txt is there \
+Download and install Dependencies \
+run pip install for requirements  \
 Give it a whirl!
 
 ##### Dependecies
