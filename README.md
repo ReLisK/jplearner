@@ -25,6 +25,7 @@ TO DOs:
 8. Fix the many flaws due to my 3 days old knowledge of pyqt and desktop guis. Plus other fixes to poor setup.
 9. Furigana in images messes with OCR quite badly at times.. logic to remove furigan from img seems difficult. 
 10. Main window janky when resized.
+11. Show definitions for each mecab parsed 'word', Problem is to figure out how best to show this...
 
 ## Install
 Requirements.txt is there \
