@@ -17,11 +17,13 @@ from PyQt6.QtWidgets import (
     QToolBar,
     QVBoxLayout,
     QWidget,
-    QSizePolicy,
+    QComboBox,
+    QMessageBox,
 )
 
 import constants
 import translator
+import translators as tss
 import utils
 
 
@@ -60,6 +62,10 @@ class DrawTranslationBox(QWidget):
     def mouseReleaseEvent(self, event):
         self.end = event.pos()
 
+    def closeEvent(self, a0: QtGui.QCloseEvent):
+        # Might need to use this to handle if user closes window before saving or anything.
+        pass
+
 
 class MainWindow(QMainWindow):
     def __init__(self, screen_size):
@@ -73,6 +79,15 @@ class MainWindow(QMainWindow):
             "<h1>Let's start with drawing the Translation Box!</h1>"
         )
         self.layout.addWidget(self.instructions)
+
+        # Translators Dropdown
+        self.tls_list = tss.translators_pool
+        self.tl_combobox = QComboBox()
+        self.tl_combobox.setPlaceholderText('Translators')
+        self.tl_combobox.setMaximumHeight(30)
+        self.tl_combobox.setMaximumWidth(100)
+        [self.tl_combobox.addItem(tl) for tl in self.tls_list]
+        self.layout.addWidget(self.tl_combobox)
 
         # Radio buttons
         self.radio_layout = QHBoxLayout()
@@ -113,6 +128,9 @@ class MainWindow(QMainWindow):
         pass
 
     def _draw_box_clicked(self):
+        if self.tl_combobox.currentText() == '':
+            utils.qt_alert("You must select a translator...")
+            return
         self._init()
         self.instructions.setText(
             "Use your mouse on the screen to click and drag a box around the translation area"
@@ -155,7 +173,7 @@ class MainWindow(QMainWindow):
 
     def _tl_snap_button(self):
         self.tl.coordinates = self.coordinates
-        self.tl.translate()
+        self.tl.run()
 
 
 def main():

@@ -8,8 +8,8 @@ from jamdict import Jamdict
 
 import imagehash
 import pytesseract
-import translators as ts
-from furigana_fork.furigana.furigana import print_html, return_html
+import translators
+from furigana.furigana import print_html, return_html
 from PIL import Image, ImageGrab
 from PyQt6 import QtCore, QtWebEngineWidgets
 from PyQt6.QtWidgets import (
@@ -20,6 +20,7 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QSizePolicy,
     QWidget,
+    QMessageBox,
 )
 
 import utils
@@ -55,8 +56,15 @@ class Translator:
         layout1.addLayout(lower_Hbox)
         self.layout.addLayout(layout1)
         self.init_html()
+        self._init_translators()
 
-    def translate(self):
+    def _init_translators(self):
+        tl_list = self.main_window.tls_list
+        self.tl_dct = {tl_list[i]: str('translators.'+tl_list[i]) for i in range(len(tl_list))}
+        print(self.tl_dct)
+        print(utils.my_import(self.tl_dct['google'])('話し合い', to_language='en'))
+
+    def run(self):
         self.text = []
         save_path = utils.get_snippet(
             TRANSLATION_PICS_SAVE_LOCATION,
@@ -69,8 +77,17 @@ class Translator:
         elif self.main_window.jpv.isChecked():
             lang = 'jpn_vert'
         try:
+            img = Image.open(save_path)
+            length_x, width_y = img.size
+            factor = min(1, float(1024.0 / length_x))
+            size = int(factor * length_x), int(factor * width_y)
+            img = img.resize(size, Image.Resampling.LANCZOS)
+            thresh = 200
+            fn = lambda x: 255 if x > thresh else 0
+            img = img.convert('L').point(fn, mode='1')
+            img.save(save_path)
             ocr_output = pytesseract.image_to_string(
-                Image.open(save_path), lang=lang, timeout=1
+                Image.open(save_path), lang=lang, timeout=30
             )
             print(ocr_output)
             furigana_conversion = return_html(ocr_output)
@@ -86,17 +103,15 @@ class Translator:
             self.view.reload()
             # self.view.setHtml(html)
         except Exception as e:
-            print(e)
-            raise
+            utils.qt_alert(f"Error: {e}")
+            return
 
     def list2html(self, elements, raw_text):
         try:
-            translation = self.deepl_translate(raw_text)
-        except:
-            try:
-                translation = self.google_translate(raw_text)
-            except Exception as e:
-                translation = str(e)
+            translation = self.translate(raw_text)
+        except Exception as e:
+            utils.qt_alert(f"Translator FAILED...please select a different one. \nError: {e}")
+            return
         return (
             f"<div class ='tooltip-container'>\n"
             f"<p class = 'tooltip-text'> {translation}</p>\n"
@@ -106,12 +121,9 @@ class Translator:
               "</div>\n"
         )
 
-    def deepl_translate(self, raw_text):
-        translated_text = ts.deepl(raw_text, to_language='en')
-        return translated_text
-
-    def google_translate(self, raw_text):
-        translated_text = ts.google(raw_text, to_language='en')
+    def translate(self, raw_text):
+        tl_Selection = self.main_window.tl_combobox.currentText()
+        translated_text = utils.my_import(self.tl_dct[tl_Selection])(raw_text, to_language='en')
         return translated_text
 
     def create_js(self, jp_text):
@@ -212,7 +224,9 @@ document.getElementById('scroll').scrollIntoView();
                 display: flex;
                 place-content: center;
             }
-
+            .tooltip-container:nth-child(odd) {
+                background-color: lightgrey;
+            }
             /* styling of the tooltip display */
             .tooltip-text {
                 display: none;
