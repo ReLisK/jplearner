@@ -1,11 +1,11 @@
 # jplearner
  
 Draw outline of where you want translations to occur. Then when u click the "Snap" button it auto converts
-japanese kanji to kanji plus furigana in brackets. eg: 
-![img.png](img.png)
+japanese kanji to kanji plus furigana superscripted. eg: \
+![image](https://user-images.githubusercontent.com/7845409/202933194-460bee35-50ca-4151-b4d7-37c4ff9b7920.png)
 Also you can select from a slew of translators to use the Hover for translation now.
 
-Made in 3 days far from perfect.
+Made in a few days far from perfect.
 
 TO DOs:
 1. Fix Draw button, so you can choose to redraw translate box. 
@@ -32,7 +32,7 @@ run pip install for requirements
 Give it a whirl!
 
 ##### Dependecies
-
+furigana fork - https://github.com/itsupera/furigana \
 tesseract:- https://github.com/tesseract-ocr/tesseract \
 mecab:- https://pypi.org/project/mecabwrap/ \
 Microsoft Visual :- https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170
