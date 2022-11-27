@@ -4,6 +4,7 @@ Draw outline of where you want translations to occur. Then when u click the "Sna
 japanese kanji to kanji plus furigana superscripted. eg: \
 ![image](https://user-images.githubusercontent.com/7845409/202933194-460bee35-50ca-4151-b4d7-37c4ff9b7920.png)\
 Also you can select from a slew of translators to use the Hover for translation now.
+![jplpic](https://user-images.githubusercontent.com/7845409/203462643-2d2215e9-de3d-4e15-a382-8aec3ff49c33.PNG)
 
 Made in a few days far from perfect.
 
@@ -24,6 +25,7 @@ TO DOs:
 8. Fix the many flaws due to my 3 days old knowledge of pyqt and desktop guis. Plus other fixes to poor setup.
 9. Furigana in images messes with OCR quite badly at times.. logic to remove furigan from img seems difficult. 
 10. Main window janky when resized.
+11. Show definitions for each mecab parsed 'word', Problem is to figure out how best to show this...
 
 ## Install
 Requirements.txt is there \
