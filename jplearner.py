@@ -104,9 +104,6 @@ class MainWindow(QMainWindow):
         self.scroll_kanjidict = QScrollArea()
         self.dict_widget = QWidget()
         self.scroll_text_box = QVBoxLayout()
-        # for i in range(1, 50):
-        #     object = QLabel("TextLabel")
-        #     self.scroll_text_box.addWidget(object)
         self.dict_widget.setLayout(self.scroll_text_box)
         # Scroll Area Properties
         self.scroll_bar = self.scroll_kanjidict.verticalScrollBar()
@@ -120,7 +117,7 @@ class MainWindow(QMainWindow):
         )
         self.scroll_kanjidict.setWidgetResizable(True)
         self.scroll_kanjidict.setMaximumWidth(800)
-        self.scroll_kanjidict.setMinimumWidth(500)
+        self.scroll_kanjidict.setMinimumWidth(300)
         self.scroll_kanjidict.setWidget(self.dict_widget)
 
         self.layout = QVBoxLayout()
@@ -171,6 +168,7 @@ class MainWindow(QMainWindow):
 
         self.main_Pfull_layout.addLayout(self.main_full_layout)
         self.main_Pfull_layout.addWidget(self.pbar)
+        self.main_Pfull_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         window.setLayout(self.main_Pfull_layout)
         self.setCentralWidget(window)
 
@@ -196,13 +194,23 @@ class MainWindow(QMainWindow):
         kanji_dict_action = QAction("&Kanji Dict", self)
         kanji_dict_action.setCheckable(True)
         kanji_dict_action.toggled.connect(self._display_kanjidict)
+        Always_on_top = QAction("&Always on top", self)
+        Always_on_top.setCheckable(True)
+        Always_on_top.setChecked(True)
+        Always_on_top.toggled.connect(self._set_always_on_top)
+        self.G_OCR_action = QAction("Google Vision OCR", self)
+        self.G_OCR_action.setCheckable(True)
+        self.G_OCR_action.triggered.connect(self._setup_g_ocr)
         self.preprocess_action = QAction("Preprocess", self)
         self.preprocess_action.setCheckable(True)
-        anki_action = QAction("Anki", self)
+        # flashcard_action = QAction("Flashcard", self)
         fileMenu.addAction(settings_action)
+        ViewMenu.addAction(Always_on_top)
         ViewMenu.addAction(kanji_dict_action)
+        # ToolMenu.addAction(flashcard_action)
+        ToolMenu.addAction(self.G_OCR_action)
         ToolMenu.addAction(self.preprocess_action)
-        ToolMenu.addAction(anki_action)
+
 
     def _createToolBar(self):
         pass
@@ -277,6 +285,17 @@ class MainWindow(QMainWindow):
             self.scroll_kanjidict.hide()
         else:
             self.scroll_kanjidict.show()
+
+    def _set_always_on_top(self):
+        self.setWindowFlags(self.windowFlags() ^ Qt.WindowType.WindowStaysOnTopHint)
+        self.show()
+
+    def _setup_g_ocr(self):
+        config.read(constants.CONFIG_FILE)
+        if config['DEFAULT']['G_ocr'] == "":
+            utils.qt_alert("Please go to settings and select your credentials json. Instructions to get credentials:\n"
+                           "https://cloud.google.com/vision/docs/detect-labels-image-client-libraries")
+            self.G_OCR_action.setChecked(False)
 
 
 def main():

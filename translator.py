@@ -25,6 +25,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QFont
 
+from google_ocr import *
 import constants
 import utils
 from constants import *
@@ -70,7 +71,17 @@ class Translator:
             tl_list[i]: str("translators." + tl_list[i]) for i in range(len(tl_list))
         }
 
+    def _update_html_on_settings_change(self):
+        config.read(constants.CONFIG_FILE)
+        # This way seems a bit hacky.. change it.
+        if config['DEFAULT']['changeflag'] == 'True':
+            self.init_html()
+            config.set('DEFAULT', 'changeflag', 'False')
+            with open(constants.CONFIG_FILE, 'w') as configfile:
+                config.write(configfile)
+
     def run(self):
+        self._update_html_on_settings_change()
         self.main_window.pbar.setValue(10)
         self.text = []
         save_path = utils.get_snippet(
@@ -88,17 +99,20 @@ class Translator:
             if self.main_window.preprocess_action.isChecked():
                 img = Image.open(save_path)
                 length_x, width_y = img.size
-                factor = min(1, float(1024.0 / length_x))
+                factor = min(1, float(1024.0 / int(length_x)))
                 size = int(factor * length_x), int(factor * width_y)
                 img = img.resize(size, Image.Resampling.LANCZOS)
                 thresh = int(config['DEFAULT']['PreProcessThreshold'])
                 fn = lambda x: 255 if x > thresh else 0
                 img = img.convert("L").point(fn, mode="1")
                 img.save(save_path)
-
-            ocr_output = pytesseract.image_to_string(
-                Image.open(save_path), lang=lang, timeout=30
-            )
+            if self.main_window.G_OCR_action.isChecked():
+                tokens = google_vision_ocr(save_path)
+                ocr_output = tokens[0]
+            else:
+                ocr_output = pytesseract.image_to_string(
+                    Image.open(save_path), lang=lang, timeout=30
+                )
             self.main_window.pbar.setValue(30)
             print(ocr_output)
             furigana_conversion = return_html(ocr_output)
@@ -157,7 +171,7 @@ class Translator:
         F.setPixelSize(int(config['DEFAULT']['kanjidictfontsize']))
         for key, item in oxford.items():
             if item is not None:
-                obj = QLabel(f"{key} : {item}")
+                obj = QLabel(f"<body><h4 style='color: {config['DEFAULT']['kanjidictkanjicolor']}'>{key}</h4> {item}</body>")
                 obj.setWordWrap(True)
                 obj.setFont(F)
                 self.main_window.scroll_text_box.addWidget(obj)
@@ -255,6 +269,9 @@ document.getElementById('scroll').scrollIntoView();
         <meta charset="UTF-8">
         <title>Title</title>
         <style>
+            ruby {{
+                font-size: {config['DEFAULT']['fontsize']}px;
+            }}
             /* this is a _demo_ container. remember the importance of relative and absolute positioning */
             .tooltip-container {{
                 position: relative;

@@ -65,17 +65,18 @@ def j_tokenize(text):
 def definition_dict(text, pbar=None):
     token_list = j_tokenize(text)
     oxford = {}
-    for token in token_list:
-        pval = pbar.value()
-        if pval < 99:
-            pbar.setValue(pval + 1)
-        word = Word.request(token)
-        if word:
-            r = word.data[0].senses
-            r = [r.english_definitions for r in r]
-            from itertools import chain
-            r = list(chain(*r))
-            oxford[token] = r
+    if token_list:
+        for token in token_list:
+            pval = pbar.value()
+            if pval < 99:
+                pbar.setValue(pval + 1)
+            word = Word.request(token)
+            if word:
+                r = word.data[0].senses
+                r = [r.english_definitions for r in r]
+                from itertools import chain
+                r = list(chain(*r))
+                oxford[token] = r
     return oxford
 
 
@@ -101,3 +102,4 @@ def definition_dict(text, pbar=None):
 # url = "https://jotoba.de/api/search/words"
 # r = requests.post(url, json.dumps(data))
 # print(r)
+
