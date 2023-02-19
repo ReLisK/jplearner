@@ -10,7 +10,6 @@ This is what it looks like with kanjidict enabled using googleocr and hovering f
 ![image](https://user-images.githubusercontent.com/7845409/219905160-c739e96e-93b9-4f4c-b642-355ded517718.png)
 
 
-Made in a few days far from perfect.
 
 TO DOs:
 1. Tl box selection isn't perfectly accurate at times for some reason.
