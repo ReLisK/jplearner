@@ -26,7 +26,7 @@ TO DOs:
 
 
 ## Install Instructions
-Install tesseract, mecab and microsoft visual; links below.
+Install tesseract, mecab and microsoft visual; links below. \
 Use Requirements.txt to pip install necessary pacakges. \
 Give it a whirl!
 
