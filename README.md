@@ -26,9 +26,10 @@ TO DOs:
 
 
 ## Install Instructions
+Download Python: https://www.python.org/downloads \
 Install tesseract, mecab and microsoft visual; links below. \
-Use Requirements.txt to pip install necessary pacakges. \
-Give it a whirl!
+Use Requirements.txt to pip install necessary pacakges: pip install -r requirements.txt  \
+Give it a whirl!: python jplearner.py
 
 ##### Dependecies
 tesseract:- https://github.com/tesseract-ocr/tesseract \
